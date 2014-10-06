@@ -79,7 +79,9 @@ public class TwitchSearchFragment extends SearchFragment
                                 for (int i = 0; i < featured.size(); i++) {
                                     JsonObject stream = featured.get(i).getAsJsonObject();
                                     JsonObject channel = stream.get("channel").getAsJsonObject();
-                                    gamesRowAdapter.add(StreamList.buildStreamInfo("category", channel.get("status").getAsString(), channel.get("name").getAsString(), channel.get("display_name").getAsString(), "http://twitch.tv/" + channel.get("name").getAsString() + "/hls",
+                                    gamesRowAdapter.add(StreamList.buildStreamInfo("category", channel.get("status").getAsString(), channel.get("name").getAsString(),
+                                            channel.get("display_name").getAsString().trim()+" playing "+channel.get("game").getAsString(),
+                                            "http://twitch.tv/" + channel.get("name").getAsString() + "/hls",
                                             stream.get("preview").getAsJsonObject().get("large").getAsString(),
                                             stream.get("preview").getAsJsonObject().get("large").getAsString(), false));
 

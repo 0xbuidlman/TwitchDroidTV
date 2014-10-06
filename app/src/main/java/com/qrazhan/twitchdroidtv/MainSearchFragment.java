@@ -51,6 +51,7 @@ public class MainSearchFragment extends BrowseFragment {
     private final Handler mHandler = new Handler();
     private URI mBackgroundURI;
     String url;
+    String title;
     CardPresenter mCardPresenter;
 
     @Override
@@ -59,6 +60,7 @@ public class MainSearchFragment extends BrowseFragment {
         super.onActivityCreated(savedInstanceState);
 
         url = getActivity().getIntent().getStringExtra("twitch-api-url");
+        title = getActivity().getIntent().getStringExtra("activity-title");
         System.out.println(url);
 
         prepareBackgroundManager();
@@ -102,7 +104,7 @@ public class MainSearchFragment extends BrowseFragment {
                     }
                 });
 
-        mRowsAdapter.add(new ListRow(new HeaderItem(0, "Streams", null), featuredRowAdapter));
+        mRowsAdapter.add(new ListRow( featuredRowAdapter));
         setAdapter(mRowsAdapter);
     }
 
@@ -121,7 +123,7 @@ public class MainSearchFragment extends BrowseFragment {
     private void setupUIElements() {
         // setBadgeDrawable(getActivity().getResources().getDrawable(
         // R.drawable.videos_by_google_banner));
-        setTitle(getString(R.string.search_results)); // Badge, when set, takes precedent
+        setTitle(title); // Badge, when set, takes precedent
                                                     // over title
         setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
@@ -138,8 +140,7 @@ public class MainSearchFragment extends BrowseFragment {
         setOnSearchClickedListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement your own in-app search", Toast.LENGTH_LONG)
-                        .show();
+                startActivity(new Intent(getActivity(), SearchActivity.class));
             }
         });
     }

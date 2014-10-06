@@ -1,6 +1,7 @@
 package com.qrazhan.twitchdroidtv;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -87,7 +88,7 @@ public class MainFragment extends BrowseFragment {
                             for (int i = 0; i < top.size(); i++) {
                                 JsonObject game = top.get(i).getAsJsonObject().get("game").getAsJsonObject();
                                 final String gameName = game.get("name").getAsString();
-                                gamesRowAdapter.add(StreamList.buildStreamInfo("category", gameName, "description", "studio", "tempurl",
+                                gamesRowAdapter.add(StreamList.buildStreamInfo("category", gameName, game.get("box").getAsJsonObject().get("template").getAsString(), "studio", "tempurl",
                                         game.get("box").getAsJsonObject().get("large").getAsString(),
                                         game.get("box").getAsJsonObject().get("large").getAsString(), true));
                             }
@@ -107,7 +108,9 @@ public class MainFragment extends BrowseFragment {
                             for (int i = 0; i < featured.size(); i++) {
                                 JsonObject stream = featured.get(i).getAsJsonObject().get("stream").getAsJsonObject();
                                 JsonObject channel = stream.get("channel").getAsJsonObject();
-                                featuredRowAdapter.add(StreamList.buildStreamInfo("category", channel.get("status").getAsString(), channel.get("name").getAsString(), channel.get("display_name").getAsString(), "http://twitch.tv/" + channel.get("name").getAsString() + "/hls",
+                                featuredRowAdapter.add(StreamList.buildStreamInfo("category", channel.get("status").getAsString(), channel.get("name").getAsString(),
+                                        channel.get("display_name").getAsString().trim()+" playing "+channel.get("game").getAsString(),
+                                        "http://twitch.tv/" + channel.get("name").getAsString() + "/hls",
                                         stream.get("preview").getAsJsonObject().get("large").getAsString(),
                                         stream.get("preview").getAsJsonObject().get("large").getAsString(), false));
 
@@ -129,7 +132,13 @@ public class MainFragment extends BrowseFragment {
         backgroundManager.attach(getActivity().getWindow());
         mBackgroundTarget = new PicassoBackgroundManagerTarget(backgroundManager);
 
-        mDefaultBackground = getResources().getDrawable(R.drawable.default_background);
+        mDefaultBackground = getResources().getDrawable(R.drawable.backgroundart);
+        try {
+            mBackgroundURI = new URI("http://ttv-backgroundart.s3.amazonaws.com/404_backgroundart.jpg");
+            startBackgroundTimer();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
         mMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
@@ -164,10 +173,10 @@ public class MainFragment extends BrowseFragment {
         return new OnItemSelectedListener() {
             @Override
             public void onItemSelected(Object item, Row row) {
-                if (item instanceof Stream) {
-                    mBackgroundURI = ((Stream) item).getBackgroundImageURI();
-                    startBackgroundTimer();
-                }
+//                if (item instanceof Stream) {
+//                    mBackgroundURI = ((Stream) item).getBackgroundImageURI();
+//                    startBackgroundTimer();
+//                }
             }
         };
     }
@@ -186,8 +195,14 @@ public class MainFragment extends BrowseFragment {
                     } else {
                         Intent intent = new Intent(getActivity(), SearchResultsActivity.class);
                         intent.putExtra("twitch-api-url", "https://api.twitch.tv/kraken/streams?game=" + stream.getTitle().replace(" ", "+"));
-                        intent.putExtra("background-url", stream.getBackgroundImageURI());
-                        System.out.println("https://api.twitch.tv/kraken/streams?game=" + stream.getTitle().replace(" ", "+"));
+                        try {
+                            URI image = new URI(stream.getDescription().replace("{width}", "544").replace("{height}", "760"));
+                            intent.putExtra("background-url", image);
+                        } catch (URISyntaxException e) {
+                            e.printStackTrace();
+                        }
+                        intent.putExtra("activity-title", stream.getTitle());
+                        System.out.println(stream.getDescription().replace("{width}", "544").replace("{height}", "760"));
                         startActivity(intent);
                     }
                 }

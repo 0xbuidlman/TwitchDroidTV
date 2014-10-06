@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -44,12 +45,23 @@ public class PlayerActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Stream s = (Stream) getIntent().getSerializableExtra(getResources().getString(R.string.movie));
         player = (WebView) findViewById(R.id.player);
         player.getSettings().setJavaScriptEnabled(true);
         player.getSettings().setMediaPlaybackRequiresUserGesture(false);
         player.setWebViewClient(new MyWebViewClient());
-        //player.setOnKeyListener(this);
+        player.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+
+                if(i == KeyEvent.KEYCODE_BUTTON_B || i == KeyEvent.KEYCODE_BACK){
+                    player.onPause();
+                }
+
+                return false;
+            }
+        });
         player.loadUrl(s.getVideoUrl());
 
 
@@ -73,8 +85,7 @@ public class PlayerActivity extends Activity{
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy() is called");
-        player.loadUrl("");
-        player.stopLoading();
+        player.onPause();
         super.onDestroy();
     }
 
@@ -103,6 +114,7 @@ public class PlayerActivity extends Activity{
             player.onPause();
             finish();
         }*/
+        System.out.println("called onKeyDown");
 
         return super.onKeyDown(keyCode, event);
     }
