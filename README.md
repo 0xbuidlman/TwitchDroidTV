@@ -20,3 +20,10 @@ Features to be added:
 * Providing content recommendations to the Android TV recommendation system
 * Logging in and browsing followed streams
 * Searching for and watching past broadcasts
+
+More Screenshots:
+-----------------
+![Featured Streams](featuredstreams.png "Featured Streams")
+![Top Games](topgames.png "Top Games")
+![Search](device-2014-10-05-103909.png "Search")
+![Browsing for a specific game](specificgame.png "Browsing for a specific game")
