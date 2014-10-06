@@ -1,5 +1,2 @@
-TwitchDroidTV
-=============
-
-A Twitch client for Android TV
-------------------------------
+TwitchDroidTV - Twitch for Android TV
+=====================================
